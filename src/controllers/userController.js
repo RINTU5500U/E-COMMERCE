@@ -59,6 +59,7 @@ const registerUser = async function (req, res) {
                 send({ status: false, message: "email is empty or invalid" })
 
         /**************************** Unickness of Email Checking ******************/
+        
         let em = await userModel.findOne({ email: email })
         if (em != null)
             return res.
@@ -86,6 +87,7 @@ const registerUser = async function (req, res) {
                 send({ status: false, message: "phone no is not valid" })
 
         /********************* UNickness of Phone Checking ********************/
+        
         let ph = await userModel.findOne({ phone: phone })
         if (ph != null)
             return res.
@@ -113,50 +115,62 @@ const registerUser = async function (req, res) {
                 send({ status: false, message: "address object must be contain Shipping and Billing object" })
 
         /************************ Destructering *************************************/
+        
         const { shipping, billing } = JSON.parse(address)
 
         if (Object.keys(shipping).length == 0)
             return res.
                 status(400).
                 send({ status: false, message: "shiping object is required inside Address" })
-        if (Object.keys(shipping).includes("0") || Object.keys(shipping).length == 0)
+        
+        if (!isValidAddress(shipping))
             return res.
                 status(400).
                 send({ status: false, message: "shipping object must contain street,city and pincode" })
+        
         if (!(shipping.street && shipping.city && shipping.pincode))
             return res.
                 status(400).
                 send({ status: false, message: "somthing is missing either street,city or pincode inside shipping object" })
+        
         if (!isValidStreet(shipping.street))
             return res.
                 status(400).
                 send({ status: false, message: "street is not valid" })
+        
         if (!isValidCity(shipping.city))
             return res.
                 status(400).send({ status: false, message: "city value is invalid" })
+        
         if (!isValidPincode(shipping.pincode))
             return res.
                 status(400).
                 send({ status: false, message: "pincode is invalid" })
+        
         if (Object.keys(billing).length == 0)
             return res.
                 status(400).
                 send({ status: false, message: "Billing object is required inside Address" })
-        if (Object.keys(billing).includes("0") || Object.keys(billing).length == 0)
+        
+        if (!isValidAddress(billing))
             return res.
                 status(400).
                 send({ status: false, message: "billing object must contain street,city and pincode" })
+        
         if (!(billing.street && billing.city && billing.pincode))
             return res.
                 status(400).
                 send({ status: false, message: "somthing is missing either street,city or pincode inside billing object" })
+        
         if (!isValidStreet(billing.street))
             return res.
                 status(400).
                 send({ status: false, message: "street is not valid" })
+        
         if (!isValidCity(billing.city))
             return res.
                 status(400).send({ status: false, message: "city value is invalid" })
+        
         if (!isValidPincode(billing.pincode))
             return res.
                 status(400).
