@@ -9,6 +9,8 @@ router.get('/test-me', function(req, res) {
 
 router.post("/register",userController.registerUser)
 router.post("/login",userController.userLogin)
+router.put("/user/:userId/profile",userController.userUpdate)
+
 
 router.all("/*", function (req, res) {
     res.status(400).send({ status: false, message: "invalid http request" });

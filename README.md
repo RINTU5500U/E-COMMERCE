@@ -171,7 +171,7 @@
         "email": "janedoe@mailinator.com",
         "profileImage": "https://classroom-training-bucket.s3.ap-south-1.amazonaws.com/user/laura-davidson-QBAH4IldaZY-unsplash.jpg",
         "phone": 9876543210,
-        "password": "$2b$10$jgF/j/clYBq.3uly6Tijce4GEGJn9EIXEcw9NI3prgKwJ/6.sWT6O",
+        "phone: "$2b$10$jgF/j/clYBq.3uly6Tijce4GEGJn9EIXEcw9NI3prgKwJ/6.sWT6O",
         "createdAt": "2021-10-10T06:25:46.051Z",
         "updatedAt": "2021-10-10T08:47:15.297Z",
         "__v": 0
