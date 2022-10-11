@@ -219,11 +219,6 @@ const userLogin = async function (req, res) {
                 .status(400)
                 .send({ status: false, message: "email is required and should be a valid email" });
         }
-
-        const isPasswordMatching = await bcrypt.compare(
-            password,
-            userDetails.password
-        ); 
         
         if (!isValidInputValue(password) || !isValidPassword(password)) {
             return res
@@ -241,10 +236,11 @@ const userLogin = async function (req, res) {
         }
 
         //***********  comparing hashed password and login password ****************
-        // const isPasswordMatching = await bcrypt.compare(
-        //     password,
-        //     userDetails.password
-        // );
+        
+        const isPasswordMatching = await bcrypt.compare(
+            password,
+            userDetails.password
+        );
 
         if (!isPasswordMatching) {
             return res
