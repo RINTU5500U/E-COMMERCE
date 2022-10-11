@@ -7,6 +7,11 @@ router.get('/test-me', function(req, res) {
     res.send({ status: true, message: "test-api working fine" })
 })
 
-router.post("/create",userController.registerUser)
+router.post("/register",userController.registerUser)
+router.post("/login",userController.userLogin)
+
+router.all("/*", function (req, res) {
+    res.status(400).send({ status: false, message: "invalid http request" });
+  });
 
 module.exports=router

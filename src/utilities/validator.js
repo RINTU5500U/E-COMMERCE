@@ -29,6 +29,9 @@ const isValidInputValue = function(value) {
 const isValidStreet=function(value){
     return /^[\S]?\w+[$,#,@,!]*$/.test(value)
 }
+const isValidCity=function(value){
+    return /^[\S][a-zA-Z]+$/
+}
 const isValidName=function(value){
     return /^[\S][a-zA-Z]+$/.test(value)
 }
@@ -55,5 +58,6 @@ module.exports = {
     isValidInputValue,
     isValidObjectId,
     isValidInputBody,
-    isValidAddress
+    isValidAddress,
+    isValidCity
 }

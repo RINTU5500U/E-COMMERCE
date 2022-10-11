@@ -17,7 +17,6 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, "User Email is required"],
         unique: [true, "Email address already exist"],
-        validate: [isValidEmail, "Please enter a valid Email address"],
         trim: true,
     },
     profileImage: {
@@ -29,7 +28,6 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, "User phone number is required"],
         unique: [true, "Phone number already exist"],
-        validate: [isValidPhone, "Please enter a valid phone number"],
         trim: true,
     },
     password: {

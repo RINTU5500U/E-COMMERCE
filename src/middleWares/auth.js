@@ -12,7 +12,7 @@ const authentication = async function(req, res, next) {
     if (!isValidInputValue(bearerToken)) {
         return res.status(401).send({ status: false, message: "authentication failed : token not found" })
     }
-    const token = bearerToken
+    const token = bearerToken.split(" ")[1]
 
     const secretKey = "group31project5";
 
