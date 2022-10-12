@@ -286,6 +286,10 @@ const userLogin = async function (req, res) {
 const userDetails = async function (req, res) {
     try {
         let user_id = req.params.userId
+        if (!user_id)
+            return res
+                .status(400)
+                .send({ status: false, message: "please enter userId in params" })
         if (!mongoose.isValidObjectId(user_id))
             return res.
                 status(400).
@@ -293,7 +297,7 @@ const userDetails = async function (req, res) {
         let result = await userModel.findById(user_id)
         if (!result)
             return res.
-                status(400).
+                status(404).
                 send({ status: false, message: "User not exist" })
         if (user_id == req.decodedtoken.userId)
             res.
