@@ -16,7 +16,7 @@ const isValidProfile=function(value){
   }
 function isValidPassword(value){
 
-    return /^\d{8,15}$/.test(value)
+    return /^[a-z]\d{8,15}$/.test(value)
 }
 function isValidPincode(data) {
     return /[\S]?\d{6}$/.test(data)
@@ -33,7 +33,10 @@ const isValidCity=function(value){
     return /^[\S][a-zA-Z]+$/
 }
 const isValidName=function(value){
-    return /^[\S][a-zA-Z]+$/.test(value)
+    return /^[A-Za-z]+((\s)?[A-Za-z]+)*$/.test(value)
+}
+function isValidPrice(value){
+    return /^[1-9]{1}\d*((\.)\d+)?$/.test(value)
 }
 const isValidObjectId = function(objectId) {
     return mongoose.Types.ObjectId.isValid(objectId);
@@ -44,8 +47,12 @@ const isValidInputBody = function(object) {
 const isValidAddress = function (value) {
     if (typeof (value) === "undefined" || value === null) return false;
     if (typeof (value) === "object" && Array.isArray(value) === false && Object.keys(value).length > 0) return true;
+    if (typeof (value) === "object" && Array.isArray(value) === true && value.length > 0) return true
     return false;
 };
+const isValidInstallments=function(value){
+    return /^[1-9]{1}$/.test(value)
+}
 module.exports = {
     isValidEmail,
     isValidPhone,
@@ -59,5 +66,7 @@ module.exports = {
     isValidObjectId,
     isValidInputBody,
     isValidAddress,
-    isValidCity
+    isValidCity,
+    isValidPrice,
+    isValidInstallments
 }

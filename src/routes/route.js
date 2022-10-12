@@ -1,6 +1,7 @@
 const express = require("express")
 const router = express.Router()
 const userController=require("../controllers/userController")
+const productController=require("../controllers/productController")
 
 //test-api
 router.get('/test-me', function(req, res) {
@@ -12,6 +13,8 @@ router.post("/login",userController.userLogin)
 router.get("/user/:userId/profile",userController.userDetails)
 router.put("/user/:userId/profile",userController.userUpdate)
 
+
+router.post("/product",productController.createProduct)
 
 router.all("/*", function (req, res) {
     res.status(400).send({ status: false, message: "invalid http request" });
