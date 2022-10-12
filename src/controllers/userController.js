@@ -283,6 +283,33 @@ const userLogin = async function (req, res) {
     }
 };
 
+const userDetails = async function (req, res) {
+    try {
+        let user_id = req.params.userId
+        if (!mongoose.isValidObjectId(user_id))
+            return res.
+                status(400).
+                send({ status: false, message: "user_id is not valid" })
+        let result = await userModel.findById(user_id)
+        if (!result)
+            return res.
+                status(400).
+                send({ status: false, message: "User not exist" })
+        if (user_id == req.decodedtoken.userId)
+            res.
+                status(200).
+                send({ status: true, message: "Successfully Fetched UserDetails", data: result })
+        else
+            res.
+                status(403).
+                send({ status: false, message: "You are not Authorized for Acces" })
+    } catch (error) {
+        res.
+            status(500).
+            send({ status: false, message: error.message })
+    }
+}
+
 const userUpdate = async function (req, res) {
     try {
         let reqbody = req.body
@@ -290,7 +317,7 @@ const userUpdate = async function (req, res) {
         let user_id = req.params.userId
         let update = {}
         const { fname, lname, email, profileImage, phone, password, address } = reqbody
-        
+
         if (fname) {
             if (!isValidName(fname))
                 return res.
@@ -317,7 +344,7 @@ const userUpdate = async function (req, res) {
                     send({ status: false, message: `this ${data.email} is already present` })
             update.email = email
         }
-        if (files.length>0) {
+        if (files.length > 0) {
             if (!isValidProfile(files[0].originalname))
                 return res.
                     status(400).
@@ -342,65 +369,66 @@ const userUpdate = async function (req, res) {
                 return res.
                     status(400).
                     send({ status: false, message: "password is not valid" })
+            update.password = password
         }
-        if (address){
+        if (address) {
 
             if (!isValidAddress(JSON.parse(address)))
-            return res.
-                status(400).
-                send({ status: false, message: "address object must be containt things that u want to be update" })
-            
-            let data=await userModel.findById(user_id)
-            req.address=data.address
-            
+                return res.
+                    status(400).
+                    send({ status: false, message: "address object must be containt things that u want to be update" })
+
+            let data = await userModel.findById(user_id)
+            req.address = data.address
+
             const { shipping, billing } = JSON.parse(address)
-            
-            if(isValidAddress(shipping)){
-                if(shipping.street){
-                    if(!isValidStreet(shipping.street))
+
+            if (isValidAddress(shipping)) {
+                if (shipping.street) {
+                    if (!isValidStreet(shipping.street))
                         return res.
                             status(400).
-                                send({status:false,message:"street is invalid"})
-                    req.address.shipping.street=shipping.street
-                }if(shipping.city){
-                    if(!isValidCity(shipping.city))
+                            send({ status: false, message: "street is invalid" })
+                    req.address.shipping.street = shipping.street
+                } if (shipping.city) {
+                    if (!isValidCity(shipping.city))
                         return res.
                             status(400).
-                                send({status:false,message:"city is invalid"})
-                    req.address.shipping.city=shipping.city
-    
-                }if(shipping.pincode){
-                    if(!isValidPincode(shipping.pincode))
+                            send({ status: false, message: "city is invalid" })
+                    req.address.shipping.city = shipping.city
+
+                } if (shipping.pincode) {
+                    if (!isValidPincode(shipping.pincode))
                         return res.
                             status(400).
-                                send({status:false,message:"pincode is invalid"})
-                    req.address.shipping.pincode=shipping.pincode
-                }       
-            }
-            
-            if(isValidAddress(billing)){
-                
-                if(billing.street){
-                    if(!isValidStreet(billing.street))
-                        return res.
-                            status(400).
-                                send({status:false,message:"street is invalid"})
-                    req.address.billing.street=billing.street
-                }if(billing.city){
-                    if(!isValidCity(billing.city))
-                        return res.
-                            status(400).
-                                send({status:false,message:"city is invalid"})
-                    req.address.billing.city=billing.city
-                }if(billing.pincode){
-                    if(!isValidPincode(billing.pincode))
-                        return res.
-                            status(400).
-                                send({status:false,message:"pincode is invalid"})
-                    req.address.billing.pincode=billing.pincode
+                            send({ status: false, message: "pincode is invalid" })
+                    req.address.shipping.pincode = shipping.pincode
                 }
             }
-            update.address=req.address
+
+            if (isValidAddress(billing)) {
+
+                if (billing.street) {
+                    if (!isValidStreet(billing.street))
+                        return res.
+                            status(400).
+                            send({ status: false, message: "street is invalid" })
+                    req.address.billing.street = billing.street
+                } if (billing.city) {
+                    if (!isValidCity(billing.city))
+                        return res.
+                            status(400).
+                            send({ status: false, message: "city is invalid" })
+                    req.address.billing.city = billing.city
+                } if (billing.pincode) {
+                    if (!isValidPincode(billing.pincode))
+                        return res.
+                            status(400).
+                            send({ status: false, message: "pincode is invalid" })
+                    req.address.billing.pincode = billing.pincode
+                }
+            }
+            update.address = req.address
         }
         let result = await userModel.findByIdAndUpdate({ _id: user_id }, update, { new: true })
         return res.
@@ -413,4 +441,4 @@ const userUpdate = async function (req, res) {
     }
 }
 
-module.exports = { registerUser, userLogin, userUpdate }
+module.exports = { registerUser, userLogin, userUpdate, userDetails }

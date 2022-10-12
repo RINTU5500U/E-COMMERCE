@@ -9,6 +9,7 @@ router.get('/test-me', function(req, res) {
 
 router.post("/register",userController.registerUser)
 router.post("/login",userController.userLogin)
+router.get("/user/:userId/profile",userController.userDetails)
 router.put("/user/:userId/profile",userController.userUpdate)
 
 
