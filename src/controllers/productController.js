@@ -161,16 +161,16 @@ const getProductDetails = async function (req, res) {
     try {
         let reqquery = req.query
         let arr = ["S", "XS", "M", "X", "L", "XXL", "XL"];
-        
+
         let { size, name, priceGreaterThan, priceLessThan, priceSort } = reqquery
-        
+
         if (priceSort) {
             if (!(priceSort == -1 || priceSort == 1))
                 return res.
                     status(400).
                     send({ status: false, message: "pricesor can contain only 1 0r -1" })
         }
-        
+
         if (size) {
 
             let sizeArr = size.replace(/\s+/g, "").split(",").map(String);
@@ -236,4 +236,247 @@ const getProductDetails = async function (req, res) {
             send({ status: false, message: error.message })
     }
 }
-module.exports = { createProduct, getProductDetails }
+
+const getProductById = async (req, res) => {
+    try {
+        let productId = req.params.productId
+        if (!productId) {
+            return res.
+                status(400).
+                send({ status: false, message: "please give productId in requesst params" })
+        }
+        if (!mongoose.Types.ObjectId.isValid(productId)) {
+            return res.
+                status(400).
+                send({ status: false, message: "please enter productId in valid format" })
+        }
+        let findData = await productModel.findOne({ _id: productId, isDeleted: false })
+        if (!findData) {
+            return res.
+                status(404).
+                send({ status: false, message: `product not found by this [${productId}] productId` })
+        }
+        return res.
+            status(200).
+            send({ status: false, message: "data fetch successfully", data: findData })
+
+    } catch (error) {
+        res.
+            status(500).
+            send({ status: false, message: error.message })
+    }
+}
+
+const updateProductDetails = async function (req, res) {
+    try {
+        const queryParams = req.query;
+        const requestBody = req.body;
+        const productId = req.params.productId;
+        const image = req.files;
+
+        // no data is required from query params
+        
+        if (isValidInputBody(queryParams)) {
+            return res
+                .status(404)
+                .send({ status: false, message: "Page not found" });
+        }
+        
+        // checking product exist with product ID
+        
+        const productByProductId = await ProductModel.findOne({
+            _id: productId,
+            isDeleted: false,
+            deletedAt: null,
+        });
+
+        if (!productByProductId) {
+            return res
+                .status(404)
+                .send({ status: false, message: "No product found by product id" });
+        }
+
+        if (!isValidInputBody(requestBody) && typeof image === undefined) {
+            return res
+                .status(400)
+                .send({ status: false, message: "Update related product data required" });
+        }
+
+        let { title, description, price, isFreeShipping, style, availableSizes, installments, } = requestBody;
+
+        // creating an empty object 
+        const updates = { $set: {} };
+
+
+        // if request body has key name "title" then after validating its value, same is added to updates object
+        
+        if (title) {
+            if (!isValidInputValue(title)) {
+                return res
+                    .status(400)
+                    .send({ status: false, message: "Invalid title" });
+            }
+
+            const notUniqueTitle = await ProductModel.findOne({
+                title: title,
+            });
+
+            if (notUniqueTitle) {
+                return res
+                    .status(400)
+                    .send({ status: false, message: "Product title already exist" });
+            }
+
+            updates["$set"]["title"] = title.trim();
+        }
+        // if request body has key name "description" then after validating its value, same is added to updates object
+        
+        if (description) {
+            if (!isValidInputValue(description)) {
+                return res
+                    .status(400)
+                    .send({ status: false, message: "Invalid description" });
+            }
+            updates["$set"]["description"] = description.trim();
+        }
+
+        // if request body has key name "price" then after validating its value, same is added to updates object
+        
+        if (price) {
+            if (!isValidPrice(price)) {
+                return res
+                    .status(400)
+                    .send({ status: false, message: "Invalid price" });
+            }
+            updates["$set"]["price"] = price;
+        }
+
+        // if request body has key name "isFreeShipping" then after validating its value, same is added to updates object
+        
+        if (isFreeShipping) {
+            if (["true", "false"].includes(isFreeShipping) === false) {
+                return res
+                    .status(400)
+                    .send({ status: false, message: "isFreeShipping should be boolean" });
+            }
+            updates["$set"]["isFreeShipping"] = isFreeShipping;
+        }
+
+        // if request body has key name "style" then after validating its value, same is added to updates object
+        
+        if (style) {
+            if (!isValidInputValue(style)) {
+                return res
+                    .status(400)
+                    .send({ status: false, message: "Invalid style" });
+            }
+            updates["$set"]["style"] = style;
+        }
+
+        // if request body has key name "availableSizes" then after validating its value, same is added to updates object
+        
+        if (availableSizes) {
+
+            if (!isValidInputValue(availableSizes)) {
+                return res
+                    .status(400)
+                    .send({ status: false, message: "Invalid format of availableSizes" });
+            }
+
+            availableSizes = JSON.parse(availableSizes);
+
+            if (Array.isArray(availableSizes) && availableSizes.length > 0) {
+                for (let i = 0; i < availableSizes.length; i++) {
+                    const element = availableSizes[i];
+
+                    if (!["S", "XS", "M", "X", "L", "XXL", "XL"].includes(element)) {
+                        return res
+                            .status(400)
+                            .send({ status: false, message: `available sizes should be from:  S, XS, M, X, L, XXL, XL` });
+                    }
+                }
+
+                updates["$set"]["availableSizes"] = availableSizes;
+            } else {
+                return res
+                    .status(400)
+                    .send({ status: false, message: "Invalid available Sizes" });
+            }
+        }
+
+        // if request body has key name "installments" then after validating its value, same is added to updates object
+        
+        if (installments) {
+            if (!isValidNumber(installments)) {
+                return res
+                    .status(400)
+                    .send({ status: false, message: "invalid installments" });
+            }
+            updates["$set"]["installments"] = Number(installments);
+        }
+
+        // if request body has key name "image" then after validating its value, same is added to updates object
+        
+        if (typeof image !== undefined) {
+            if (image && image.length > 0) {
+                if (!isValidImageType(image[0].mimetype)) {
+                    return res
+                        .status(400)
+                        .send({ status: false, message: "Only images can be uploaded (jpeg/jpg/png)" });
+                }
+
+                const productImageUrl = await AWS.uploadFile(image[0]);
+                updates["$set"]["productImage"] = productImageUrl;
+            }
+        }
+
+        if (Object.keys(updates["$set"]).length === 0) {
+            return res.json("nothing is updated");
+        }
+
+        // updating product data of given ID by passing updates object
+        
+        const updatedProduct = await ProductModel.findOneAndUpdate({ _id: productId }, updates, { new: true });
+
+        res
+            .status(200)
+            .send({ status: true, message: "Product data updated successfully", data: updatedProduct });
+
+    } catch (error) {
+
+        res.status(500).send({ error: error.message });
+
+    }
+};
+
+const deleteProductById = async (req, res) => {
+    try {
+        let productId = req.params.productId
+        if (!productId) {
+            return res.
+                status(400).
+                send({ status: false, message: "please give productId in requesst params" })
+        }
+        if (!mongoose.Types.ObjectId.isValid(productId)) {
+            return res.
+                status(400).
+                send({ status: false, message: "please enter productId in valid format" })
+        }
+        let findData = await productModel.findOneAndUpdate({ _id: productId, isDeleted: false }, { isDeleted: true, deletedAt: Date.now() })
+        if (!findData) {
+            return res.
+                status(404).
+                send({ status: false, message: `product not found by this [${productId}] productId` })
+        }
+        return res.
+            status(200).
+            send({ status: false, message: "data deleted successfully" })
+
+    } catch (error) {
+        res.
+            status(500).
+            send({ status: false, message: error.message })
+    }
+}
+
+module.exports = { createProduct, getProductDetails, getProductById, deleteProductById, updateProductDetails }
