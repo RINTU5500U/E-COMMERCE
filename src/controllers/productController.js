@@ -161,7 +161,16 @@ const getProductDetails = async function (req, res) {
     try {
         let reqquery = req.query
         let arr = ["S", "XS", "M", "X", "L", "XXL", "XL"];
-        let { size, name, priceGreaterThan, priceLessThan } = reqquery
+        
+        let { size, name, priceGreaterThan, priceLessThan, priceSort } = reqquery
+        
+        if (priceSort) {
+            if (!(priceSort == -1 || priceSort == 1))
+                return res.
+                    status(400).
+                    send({ status: false, message: "pricesor can contain only 1 0r -1" })
+        }
+        
         if (size) {
 
             let sizeArr = size.replace(/\s+/g, "").split(",").map(String);
@@ -177,7 +186,7 @@ const getProductDetails = async function (req, res) {
                     });
             }
         }
-        
+
         if (name) {
             if (!isValidName(name))
                 return res.
@@ -185,7 +194,7 @@ const getProductDetails = async function (req, res) {
                     send({ status: false, message: "plz give the name in valid formate" })
         } else
             name = ""
-        
+
         if (priceGreaterThan) {
             if (!isValidPrice(priceGreaterThan))
                 return res.
@@ -193,7 +202,7 @@ const getProductDetails = async function (req, res) {
                     send({ status: false, message: "plz give the priceGratterThen in valid formate" })
         } else
             priceGreaterThan = 0
-        
+
         if (priceLessThan) {
             if (!isValidPrice(priceLessThan))
                 return res.
@@ -201,15 +210,22 @@ const getProductDetails = async function (req, res) {
                     send({ status: false, message: "plz give the priceLowerThen in the valid formate" })
         } else
             priceLessThan = 2 ** 32 - 1
-        
+
         if (size != undefined) {
-            let result = await productModel.find({ "title": { $regex: `${name}` }, "price": { "$gte": `${priceGreaterThan}`, "$lte": `${priceLessThan}` }, "availableSizes": { $in: `${size}` },isDeleted:false })
+            let result = await productModel.find({ "title": { $regex: `${name}` }, "price": { "$gte": `${priceGreaterThan}`, "$lte": `${priceLessThan}` }, "availableSizes": { $in: `${size}` }, isDeleted: false })
+            if (priceSort == 1)
+                result.sort((a, b) => (a.price) - (b.price))
+            else if (priceSort == -1)
+                result.sort((a, b) => (b.price) - (a.price))
             return res.
                 status(200).
                 send({ status: true, data: result })
         } else {
-            
-            let result = await productModel.find({ "title": { $regex: `${name}` }, "price": { "$gte": `${priceGreaterThan}`, "$lte": `${priceLessThan}` },isDeleted:false })
+            let result = await productModel.find({ "title": { $regex: `${name}` }, "price": { "$gte": `${priceGreaterThan}`, "$lte": `${priceLessThan}` }, isDeleted: false })
+            if (priceSort == 1)
+                result.sort((a, b) => (a.price) - (b.price))
+            else if (priceSort == -1)
+                result.sort((a, b) => (b.price) - (a.price))
             return res.
                 status(200).
                 send({ status: true, data: result })
