@@ -15,7 +15,7 @@ router.put("/user/:userId/profile",userController.userUpdate)
 
 
 router.post("/product",productController.createProduct)
-
+router.get("/details",productController.getProductDetails)
 router.all("/*", function (req, res) {
     res.status(400).send({ status: false, message: "invalid http request" });
   });
