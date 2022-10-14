@@ -253,6 +253,7 @@ Send [form-data](https://developer.mozilla.org/en-US/docs/Web/API/FormData)
 ## FEATURE III - Cart
 ### Models
 - Cart Model
+
 ```yaml
 {
   userId: {ObjectId, refs to User, mandatory, unique},

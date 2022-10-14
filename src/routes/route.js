@@ -2,6 +2,7 @@ const express = require("express")
 const router = express.Router()
 const userController=require("../controllers/userController")
 const productController=require("../controllers/productController")
+const cartController=require("../controllers/cartController")
 
 //test-api
 router.get('/test-me', function(req, res) {
@@ -23,6 +24,8 @@ router.get("/products/:productId",productController.getProductById)
 router.delete("/products/:productId",productController.deleteProductById)
 router.put("/products/:productId",productController.updateProductDetails)
 
+
+router.post("/users/:userId/cart",cartController.createCart)
 router.all("/*", function (req, res) {
     res.status(400).send({ status: false, message: "invalid http request" });
   });

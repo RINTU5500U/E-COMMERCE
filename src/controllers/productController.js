@@ -275,15 +275,12 @@ const updateProductDetails = async function (req, res) {
         const image = req.files;
 
         // no data is required from query params
-        
         if (isValidInputBody(queryParams)) {
             return res
                 .status(404)
                 .send({ status: false, message: "Page not found" });
         }
-        
         // checking product exist with product ID
-        
         const productByProductId = await ProductModel.findOne({
             _id: productId,
             isDeleted: false,
@@ -309,7 +306,6 @@ const updateProductDetails = async function (req, res) {
 
 
         // if request body has key name "title" then after validating its value, same is added to updates object
-        
         if (title) {
             if (!isValidInputValue(title)) {
                 return res
@@ -330,7 +326,6 @@ const updateProductDetails = async function (req, res) {
             updates["$set"]["title"] = title.trim();
         }
         // if request body has key name "description" then after validating its value, same is added to updates object
-        
         if (description) {
             if (!isValidInputValue(description)) {
                 return res
@@ -341,7 +336,6 @@ const updateProductDetails = async function (req, res) {
         }
 
         // if request body has key name "price" then after validating its value, same is added to updates object
-        
         if (price) {
             if (!isValidPrice(price)) {
                 return res
@@ -352,7 +346,6 @@ const updateProductDetails = async function (req, res) {
         }
 
         // if request body has key name "isFreeShipping" then after validating its value, same is added to updates object
-        
         if (isFreeShipping) {
             if (["true", "false"].includes(isFreeShipping) === false) {
                 return res
@@ -363,7 +356,6 @@ const updateProductDetails = async function (req, res) {
         }
 
         // if request body has key name "style" then after validating its value, same is added to updates object
-        
         if (style) {
             if (!isValidInputValue(style)) {
                 return res
