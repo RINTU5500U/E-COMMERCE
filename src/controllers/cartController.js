@@ -18,8 +18,9 @@ const createCart = async function (req, res) {
                 return res.
                     status(400).
                     send({ status: false, message: "productId is not valid" })
-            let data = await productModel.find({ _id: productId }, { isDeleted: false })
-            if (data.length == 0)
+            let data = await productModel.findOne( {_id:productId })
+            console.log(data)
+            if (data.isDeleted==true)
                 return res.
                     status(404).
                     send({ status: false, message: "product is not exist" })
@@ -29,11 +30,11 @@ const createCart = async function (req, res) {
                 return res.
                     status(400).
                     send({ status: false, message: "cart_id is not valid" })
-            let data = await cartModel.find({ _id: cart_id }, { isDeleted: false })
-            if (data.length == 0)
+            let data = await cartModel.findOne({ _id: cart_id })
+            if (data.items.length==0 && data.totalPrice==0 && data.totalItems==0)
                 return res.
                     status(404).
-                    send({ status: false, message: "cart is not present" })
+                    send({ status: false, message: "cart is not present or cart does not contain any data" })
         }
 
         if (cart_id == "undefined" || !cart_id) {
