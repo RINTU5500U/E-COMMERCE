@@ -24,10 +24,16 @@ router.get("/products/:productId",productController.getProductById)
 router.delete("/products/:productId",productController.deleteProductById)
 router.put("/products/:productId",productController.updateProductDetails)
 
+/************************* Cart API *************************************/
 
 router.post("/users/:userId/cart",cartController.createCart)
+router.put("/users/:userId/cart",cartController.updateCart)
+router.get("/users/:userId/cart",cartController.getCartDeatils)
+router.delete("/users/:userId/cart",cartController.delCart)
+
 router.all("/*", function (req, res) {
     res.status(400).send({ status: false, message: "invalid http request" });
   });
+
 
 module.exports=router

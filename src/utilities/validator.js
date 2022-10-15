@@ -18,6 +18,9 @@ function isValidPassword(value){
 
     return /^[a-z]\d{8,15}$/.test(value)
 }
+function isValidRemoveProduct(value){
+    return /^[0-1]{1}$/.test(value)
+}
 function isValidPincode(data) {
     return /[\S]?\d{6}$/.test(data)
 }
@@ -68,5 +71,6 @@ module.exports = {
     isValidAddress,
     isValidCity,
     isValidPrice,
-    isValidInstallments
+    isValidInstallments,
+    isValidRemoveProduct
 }
