@@ -1,7 +1,7 @@
 const mongoose = require("mongoose")
 const aws = require("../utilities/aws")
 const productModel = require("../models/productModel")
-const { isValidName, isValidPrice, isValidAddress, isValidInstallments, isValidProfile } = require("../utilities/validator")
+const { isValidStreet, isValidPrice, isValidAddress, isValidInstallments, isValidProfile } = require("../utilities/validator")
 
 const createProduct = async function (req, res) {
     try {
@@ -26,7 +26,7 @@ const createProduct = async function (req, res) {
                 status(400).
                 send({ status: false, message: "title is required" })
 
-        if (!isValidName(title))
+        if (!isValidStreet(title))
             return res.
                 status(400).
                 send({ status: false, message: "title is not valid" })
@@ -36,7 +36,7 @@ const createProduct = async function (req, res) {
                 status(400).
                 send({ status: false, message: "description is required" })
 
-        if (!isValidName(description))
+        if (!isValidStreet(description))
             return res.
                 status(400).
                 send({ status: false, message: "description is not valid" })
@@ -64,32 +64,28 @@ const createProduct = async function (req, res) {
                     status(400).
                     send({ status: false, message: "currencyformate must be 'Rs' formate" })
         }
-
         if (isFreeShipping) {
             if (!(isFreeShipping == false.toString() || isFreeShipping == true.toString()))
                 return res.
                     status(400).
                     send({ status: false, message: "isfreeshipping contain only boolean value" })
         }
-
         if (files && files.length > 0) {
             req.link = await aws.uploadFile(files[0])
         } else
             return res.
                 status(400).
                 send({ status: false, message: "profile image is required" })
-
         if (!isValidProfile(files[0].originalname))
             return res.
                 status(400).
                 send({ status: false, msg: "plz provide profileImage in (jpg|png|jpeg) formate" })
-
         if (!style)
             return res.
                 status(400).
                 send({ status: false, message: "style is missing" })
 
-        if (!isValidName(style))
+        if (!isValidStreet(style))
             return res.
                 status(400).
                 send({ status: false, message: "style is invalid" })
@@ -98,9 +94,8 @@ const createProduct = async function (req, res) {
             return res.
                 status(400).
                 send({ status: false, message: "availableSizes is missing" })
-
-        availableSizes = JSON.parse(availableSizes)
-
+        if (!isValidStreet(availableSizes))
+            availableSizes = JSON.parse(availableSizes)
         if (!isValidAddress((availableSizes)))
             return res.
                 status(400).
@@ -149,7 +144,7 @@ const createProduct = async function (req, res) {
         let result = await productModel.create(obj)
         res.
             status(201).
-            send({ status: true, message: "product has created successfully", data: result })
+            send({ status: true, message: "Success", data: result })
     } catch (error) {
         res.
             status(500).
@@ -228,7 +223,7 @@ const getProductDetails = async function (req, res) {
                 result.sort((a, b) => (b.price) - (a.price))
             return res.
                 status(200).
-                send({ status: true, data: result })
+                send({ status: true,message:"Success", data: result })
         }
     } catch (error) {
         res.
@@ -258,7 +253,7 @@ const getProductById = async (req, res) => {
         }
         return res.
             status(200).
-            send({ status: false, message: "data fetch successfully", data: findData })
+            send({ status: true, message: "Success", data: findData })
 
     } catch (error) {
         res.
@@ -366,7 +361,7 @@ const updateProductDetails = async function (req, res) {
         }
 
         // if request body has key name "availableSizes" then after validating its value, same is added to updates object
-        
+
         if (availableSizes) {
 
             if (!isValidInputValue(availableSizes)) {
@@ -397,7 +392,7 @@ const updateProductDetails = async function (req, res) {
         }
 
         // if request body has key name "installments" then after validating its value, same is added to updates object
-        
+
         if (installments) {
             if (!isValidNumber(installments)) {
                 return res
@@ -408,7 +403,7 @@ const updateProductDetails = async function (req, res) {
         }
 
         // if request body has key name "image" then after validating its value, same is added to updates object
-        
+
         if (typeof image !== undefined) {
             if (image && image.length > 0) {
                 if (!isValidImageType(image[0].mimetype)) {
@@ -427,7 +422,7 @@ const updateProductDetails = async function (req, res) {
         }
 
         // updating product data of given ID by passing updates object
-        
+
         const updatedProduct = await ProductModel.findOneAndUpdate({ _id: productId }, updates, { new: true });
 
         res
@@ -454,15 +449,15 @@ const deleteProductById = async (req, res) => {
                 status(400).
                 send({ status: false, message: "please enter productId in valid format" })
         }
-        let findData = await productModel.findOneAndUpdate({ _id: productId, isDeleted: false }, { isDeleted: true, deletedAt: Date.now() })
+        let findData = await productModel.findOneAndUpdate({ _id: productId, isDeleted: false }, { isDeleted: true, deletedAt: Date.now() },{ returnOriginal: false })
         if (!findData) {
             return res.
-                status(404).
-                send({ status: false, message: `product not found by this [${productId}] productId` })
+                status(200).
+                send({ status: true, message: `product not found by this [${productId}] productId` })
         }
         return res.
             status(200).
-            send({ status: false, message: "data deleted successfully" })
+            send({ status: false, message: "data deleted successfully" ,data:findData})
 
     } catch (error) {
         res.

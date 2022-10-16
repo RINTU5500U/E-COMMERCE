@@ -30,7 +30,8 @@ const isValidInputValue = function(value) {
     return false
 }
 const isValidStreet=function(value){
-    return /^[\S]?\w+[$,#,@,!]*$/.test(value)
+    value=value.trim()
+    return /^\w+([\s]?\w+[.,$,#,@]?)*$/.test(value)
 }
 const isValidCity=function(value){
     return /^[\S][a-zA-Z]+$/

@@ -48,7 +48,7 @@ const createCart = async function (req, res) {
                     let data = await cartModel.create(obj)
                     return res.
                         status(201).
-                        send({ status: true, message: "Cart Created Successfully", data: data })
+                        send({ status: true, message: "Success", data: data })
                 } else {
                     let obj = new Object()
                     let price = await productModel.findById(productId).select({ _id: 0, price: 1 })
@@ -62,15 +62,15 @@ const createCart = async function (req, res) {
                     obj.totalItems = 1
                     let data = await cartModel.create(obj)
                     return res.
-                        status(200).
-                        send({ status: true, message: "Product Added successfully in the Cart", data: data })
+                        status(201).
+                        send({ status: true, message: "Success", data: data })
                 }
             } else {
                 if (productId == "undefined" || !productId) {
                     let result = await cartModel.find({ userId: user_id })
                     return res.
-                        status(200).
-                        send({ status: true, message: "Added Product list in Cart", data: result })
+                        status(201).
+                        send({ status: true, message: "Success", data: result })
                 }
                 let flag = false
                 let total = await productModel.findById(productId).select({ _id: 0, price: 1 })
@@ -93,8 +93,8 @@ const createCart = async function (req, res) {
                 }
                 let result = await cartModel.findOneAndUpdate({ userId: user_id }, { $set: { items: a, totalPrice: price, totalItems: a.length } }, { returnOriginal: false })
                 return res.
-                    status(200).
-                    send({ status: true, message: "Product Added Successfully in the cart", data: result })
+                    status(201).
+                    send({ status: true, message: "Success", data: result })
             }
         } else {
             if (productId == undefined || !productId)
@@ -122,8 +122,8 @@ const createCart = async function (req, res) {
             }
             let result = await cartModel.findOneAndUpdate({ _id: cart_id }, { $set: { items: a, totalPrice: price, totalItems: a.length } }, { returnOriginal: false })
             return res.
-                status(200).
-                send({ status: true, message: "Product Added in the Cart", data: result })
+                status(201).
+                send({ status: true, message: "Cart creation has a successful", data: result })
         }
     } catch (error) {
         res.
