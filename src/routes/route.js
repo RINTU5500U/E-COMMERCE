@@ -3,6 +3,7 @@ const router = express.Router()
 const userController=require("../controllers/userController")
 const productController=require("../controllers/productController")
 const cartController=require("../controllers/cartController")
+const orderControler=require("../controllers/orderController")
 
 //test-api
 router.get('/test-me', function(req, res) {
@@ -30,6 +31,9 @@ router.post("/users/:userId/cart",cartController.createCart)
 router.put("/users/:userId/cart",cartController.updateCart)
 router.get("/users/:userId/cart",cartController.getCartDeatils)
 router.delete("/users/:userId/cart",cartController.delCart)
+
+router.post("/users/:userId/orders",orderControler.createOrder)
+router.put("/users/:userId/orders",orderControler.updateOrder)
 
 router.all("/*", function (req, res) {
     res.status(400).send({ status: false, message: "invalid http request" });

@@ -1,7 +1,7 @@
 const mongoose = require("mongoose")
 const aws = require("../utilities/aws")
 const productModel = require("../models/productModel")
-const { isValidStreet, isValidPrice, isValidAddress, isValidInstallments, isValidProfile } = require("../utilities/validator")
+const {isValidInputBody,isValidInputValue, isValidStreet, isValidPrice, isValidAddress, isValidInstallments, isValidProfile } = require("../utilities/validator")
 
 const createProduct = async function (req, res) {
     try {
@@ -276,7 +276,7 @@ const updateProductDetails = async function (req, res) {
                 .send({ status: false, message: "Page not found" });
         }
         // checking product exist with product ID
-        const productByProductId = await ProductModel.findOne({
+        const productByProductId = await productModel.findOne({
             _id: productId,
             isDeleted: false,
             deletedAt: null,
@@ -308,7 +308,7 @@ const updateProductDetails = async function (req, res) {
                     .send({ status: false, message: "Invalid title" });
             }
 
-            const notUniqueTitle = await ProductModel.findOne({
+            const notUniqueTitle = await productModel.findOne({
                 title: title,
             });
 
@@ -423,7 +423,7 @@ const updateProductDetails = async function (req, res) {
 
         // updating product data of given ID by passing updates object
 
-        const updatedProduct = await ProductModel.findOneAndUpdate({ _id: productId }, updates, { new: true });
+        const updatedProduct = await productModel.findOneAndUpdate({ _id: productId }, updates, { new: true });
 
         res
             .status(200)

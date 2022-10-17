@@ -57,6 +57,11 @@ const isValidAddress = function (value) {
 const isValidInstallments=function(value){
     return /^[1-9]{1}$/.test(value)
 }
+const isValid=function(value){
+    if(value==undefined || value==null)return false
+    if(typeof(value)=="string" && value.trim().length>0)return true
+    return false
+}
 module.exports = {
     isValidEmail,
     isValidPhone,
@@ -73,5 +78,6 @@ module.exports = {
     isValidCity,
     isValidPrice,
     isValidInstallments,
-    isValidRemoveProduct
+    isValidRemoveProduct,
+    isValid
 }

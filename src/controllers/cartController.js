@@ -97,6 +97,11 @@ const createCart = async function (req, res) {
                     send({ status: true, message: "Success", data: result })
             }
         } else {
+            let c=await cartModel.findById(cart_id).select({_id:0,userId:1})
+            if(c.userId!=user_id)
+                return res.
+                    status(400).
+                        send({status:false,message:"You can not Add the product in this cart"})
             if (productId == undefined || !productId)
                 return res.
                     status(400).
@@ -123,7 +128,7 @@ const createCart = async function (req, res) {
             let result = await cartModel.findOneAndUpdate({ _id: cart_id }, { $set: { items: a, totalPrice: price, totalItems: a.length } }, { returnOriginal: false })
             return res.
                 status(201).
-                send({ status: true, message: "Cart creation has a successful", data: result })
+                send({ status: true, message: "Success", data: result })
         }
     } catch (error) {
         res.
@@ -160,6 +165,7 @@ const updateCart = async function (req, res) {
                 return res.
                     status(400).
                     send({ status: false, message: "product is not exist" })
+            
         }
         if (cart_id) {
             if (!mongoose.isValidObjectId(cart_id))
@@ -208,7 +214,7 @@ const updateCart = async function (req, res) {
             let result1 = await cartModel.findOneAndUpdate({ _id: cart_id }, { $set: { items: a, totalPrice: price, totalItems: a.length } }, { returnOriginal: false })
             return res.
                 status(200).
-                send({ status: true, message: "Cart Updated Successfully", data: result1 })
+                send({ status: true, message: "Success", data: result1 })
         }else
             return res.
                 status(400).
@@ -239,7 +245,7 @@ const getCartDeatils = async function (req, res) {
                 send({ status: false, message: `cart does not exist for this ${user_id} user` })
         res.
             status(200).
-            send({ status: true, message: "Cart Deatils", data: result })
+            send({ status: true, message: "Success", data: result })
     } catch (error) {
         res.
             status(500).
@@ -262,7 +268,7 @@ const delCart = async function (req, res) {
                 send({ status: false, message: `cart is not  exist for this ${user_id} user` })
         let data = await cartModel.findOneAndUpdate({ userId: user_id }, { $set: { items: a, totalPrice: 0, totalItems: 0 } }, { returnOriginal: false })
         res.
-            status(200).
+            status(204).
             send({ status: true, message: "Cart deleted Successfully", data: data })
     } catch (error) {
         res.
