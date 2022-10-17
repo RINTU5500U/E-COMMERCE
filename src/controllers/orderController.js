@@ -104,10 +104,10 @@ const updateOrder = async function (req, res) {
             return res.
                 status(404).
                 send({ status: false, message: `this ${orderId} is not exist for updation` })
-        if (user_id != data.userId)
-            return res.
-                status(400).
-                send({ status: false, message: "You can not update this Order" })
+        // if (user_id != data.userId)
+        //     return res.
+        //         status(400).
+        //         send({ status: false, message: "You can not update this Order" })
         let result=await orderModel.findOneAndUpdate({_id:orderId},{$set:{status:status}},{returnOriginal:false})
         res.
             status(200).

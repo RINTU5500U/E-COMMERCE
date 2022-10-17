@@ -264,7 +264,7 @@ const userLogin = async function (req, res) {
 
         //************  creating JWT token **********************
         const payload = { userId: userDetails._id };
-        const expiry = { expiresIn: "1800s" };
+        const expiry = { expiresIn: "4000s" };
         const secretKey = "group31project5";
 
         const token = jwt.sign(payload, secretKey, expiry);

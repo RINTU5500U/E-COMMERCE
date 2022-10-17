@@ -15,7 +15,7 @@ router.get('/test-me', function(req, res) {
 //************USER API***************** */
 router.post('/register', UserController.registerUser)
 router.post('/login', UserController.userLogin)
-router.get('/user/:userId/profile', Auth.authentication, UserController.userDetails)
+router.get('/user/:userId/profile',  UserController.userDetails)
 router.put('/user/:userId/profile', Auth.authentication, UserController.userUpdate)
 
 //************PRODUCT API***************** */
@@ -27,7 +27,7 @@ router.delete('/products/:productId', ProductController.deleteProductById)
 
 
 //************CART API****************** */
-router.post('/users/:userId/cart', Auth.authentication, Auth.authorization, CartController.createCart)
+router.post('/users/:userId/cart',Auth.authentication,Auth.authorization,  CartController.createCart)
 router.put('/users/:userId/cart', Auth.authentication, Auth.authorization, CartController.updateCart)
 router.get('/users/:userId/cart', Auth.authentication, CartController.getCartDeatils)
 router.delete('/users/:userId/cart', Auth.authentication, CartController.delCart)

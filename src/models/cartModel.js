@@ -18,6 +18,12 @@ const createCart=new mongoose.Schema({
             type:Number,
             require:true,
             min:1
+        },
+        productImage:{
+            type:String
+        },
+        title:{
+            type:String
         }
     }],
     totalPrice:{
