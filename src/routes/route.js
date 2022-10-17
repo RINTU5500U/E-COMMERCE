@@ -1,39 +1,41 @@
 const express = require("express")
 const router = express.Router()
-const userController=require("../controllers/userController")
-const productController=require("../controllers/productController")
-const cartController=require("../controllers/cartController")
-const orderControler=require("../controllers/orderController")
+const UserController=require("../controllers/userController")
+const ProductController=require("../controllers/productController")
+const CartController=require("../controllers/cartController")
+const OrderControler=require("../controllers/orderController")
+const Auth=require("../middleWares/auth")
 
 //test-api
 router.get('/test-me', function(req, res) {
     res.send({ status: true, message: "test-api working fine" })
 })
 
-/**************************** User API *********************************/
 
-router.post("/register",userController.registerUser)
-router.post("/login",userController.userLogin)
-router.get("/user/:userId/profile",userController.userDetails)
-router.put("/user/:userId/profile",userController.userUpdate)
+//************USER API***************** */
+router.post('/register', UserController.registerUser)
+router.post('/login', UserController.userLogin)
+router.get('/user/:userId/profile', Auth.authentication, UserController.userDetails)
+router.put('/user/:userId/profile', Auth.authentication, UserController.userUpdate)
 
-/******************* Product API ***************************************/
+//************PRODUCT API***************** */
+router.post('/products', ProductController.createProduct)
+router.get('/products', ProductController.getProductDetails)
+router.get('/products/:productId', ProductController.getProductById)
+router.put('/products/:productId', ProductController.updateProductDetails)
+router.delete('/products/:productId', ProductController.deleteProductById)
 
-router.post("/products",productController.createProduct)
-router.get("/products",productController.getProductDetails)
-router.get("/products/:productId",productController.getProductById)
-router.delete("/products/:productId",productController.deleteProductById)
-router.put("/products/:productId",productController.updateProductDetails)
 
-/************************* Cart API *************************************/
+//************CART API****************** */
+router.post('/users/:userId/cart', Auth.authentication, Auth.authorization, CartController.createCart)
+router.put('/users/:userId/cart', Auth.authentication, Auth.authorization, CartController.updateCart)
+router.get('/users/:userId/cart', Auth.authentication, CartController.getCartDeatils)
+router.delete('/users/:userId/cart', Auth.authentication, CartController.delCart)
 
-router.post("/users/:userId/cart",cartController.createCart)
-router.put("/users/:userId/cart",cartController.updateCart)
-router.get("/users/:userId/cart",cartController.getCartDeatils)
-router.delete("/users/:userId/cart",cartController.delCart)
+//************ORDER API****************** */
+router.post('/users/:userId/orders', Auth.authentication, OrderControler.createOrder)
+router.put('/users/:userId/orders', Auth.authentication, Auth.authorization, OrderControler.updateOrder)
 
-router.post("/users/:userId/orders",orderControler.createOrder)
-router.put("/users/:userId/orders",orderControler.updateOrder)
 
 router.all("/*", function (req, res) {
     res.status(400).send({ status: false, message: "invalid http request" });
