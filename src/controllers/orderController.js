@@ -74,7 +74,11 @@ const updateOrder = async function (req, res) {
     try {
         let reqbody = req.body
         let user_id = req.params.userId
-        const { orderId, status } = reqbody
+        const { orderId, status ,...a} = reqbody
+        if(Object.keys(a).length>0)
+            return res.
+                status(400).
+                    send({status:false,message:"invalid data entry inside request body"})
         if (!orderId)
             return res.
                 status(400).
