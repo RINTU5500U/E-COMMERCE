@@ -286,11 +286,6 @@ const userLogin = async function (req, res) {
 const userDetails = async function (req, res) {
     try {
         let user_id = req.params.userId
-        console.log(user_id)
-        if (!user_id)
-            return res
-                .status(400)
-                .send({ status: false, message: "please enter userId in params" })
         if (!mongoose.isValidObjectId(user_id))
             return res.
                 status(400).
@@ -300,14 +295,9 @@ const userDetails = async function (req, res) {
             return res.
                 status(404).
                 send({ status: false, message: "User not exist" })
-        if (user_id == req.params.userId)
-            res.
-                status(200).
+        res.
+            status(200).
                 send({ status: true, message: "Successfully Fetched UserDetails", data: result })
-        else
-            res.
-                status(403).
-                send({ status: false, message: "You are not Authorized for Acces" })
     } catch (error) {
         res.
             status(500).

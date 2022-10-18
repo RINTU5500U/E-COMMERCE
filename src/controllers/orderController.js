@@ -99,15 +99,19 @@ const updateOrder = async function (req, res) {
             return res.
                 status(400).
                 send({ status: false, message: 'it can contain only [pending, completed, cancled] values ' })
-        let data = await orderModel.find({ _id: orderId, cancellable:true}).select({ _id: 0, userId: 1 })
+        let data = await orderModel.findOne({ _id: orderId, cancellable:true}).select({userId: 1,status:1 })
         if (data == null)
             return res.
                 status(404).
                 send({ status: false, message: `this ${orderId} is not exist for updation` })
-        // if (user_id != data.userId)
-        //     return res.
-        //         status(400).
-        //         send({ status: false, message: "You can not update this Order" })
+        if(data.status=="completed")
+            return res.
+                status(400).
+                    send({status:false,message:"U can not updated this , bcz its also present in complete stage"})
+        if (user_id != data.userId)
+            return res.
+                status(400).
+                send({ status: false, message: "You can not update this Order" })
         let result=await orderModel.findOneAndUpdate({_id:orderId},{$set:{status:status}},{returnOriginal:false})
         res.
             status(200).

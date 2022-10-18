@@ -40,7 +40,6 @@ const authentication = async function(req, res, next) {
 const authorization = async function(req, res, next) {
     const userId = req.params.userId
     const decodedToken = req.decodedToken
-
     if (!isValidObjectId(userId)) {
         return res.status(400).send({ status: false, message: " enter a valid userId" })
     }
@@ -54,6 +53,7 @@ const authorization = async function(req, res, next) {
     if (userId !== decodedToken.userId) {
         return res.status(403).send({ status: false, message: "unauthorized access" })
     }
+
     next()
 }
 
