@@ -19,8 +19,8 @@ const createCart = async function (req, res) {
                 return res.
                     status(400).
                     send({ status: false, message: "productId is not valid" })
-            let data = await productModel.findOne({_id: productId ,isDeleted:false})
-            if (data==null)
+            let data = await productModel.findOne({ _id: productId, isDeleted: false })
+            if (data == null)
                 return res.
                     status(404).
                     send({ status: false, message: "product is not exist" })
@@ -31,20 +31,20 @@ const createCart = async function (req, res) {
                     status(400).
                     send({ status: false, message: "cart_id is not valid" })
             let data = await cartModel.findOne({ _id: cartId })
-            if(data==null)
+            if (data == null)
                 return res.
                     status(400).
-                        send({status:false,message:"cart is not exist"})
+                    send({ status: false, message: "cart is not exist" })
         }
 
         if (cartId == "undefined" || !cartId) {
-            
+
             let result = await cartModel.findOne({ userId: user_id })
 
             if (result == null) {
-                
+
                 if (productId == "undefined" || !productId) {
-                    
+
                     let obj = new Object()
                     obj.userId = user_id
                     obj.totalPrice = 0
@@ -56,14 +56,14 @@ const createCart = async function (req, res) {
                 } else {
 
                     let obj = new Object()
-                    let price = await productModel.findById(productId).select({ _id: 0, price: 1,productImage:1,title:1 })
+                    let price = await productModel.findById(productId).select({ _id: 0, price: 1, productImage: 1, title: 1 })
                     let total = price.price
                     obj.userId = user_id
                     let d = {}
                     d.productId = productId
                     d.quantity = 1
-                    d.productImage=price.productImage
-                    d.title=price.title
+                    d.productImage = price.productImage
+                    d.title = price.title
                     obj.items = d
                     obj.totalPrice = total
                     obj.totalItems = 1
@@ -81,7 +81,7 @@ const createCart = async function (req, res) {
                         send({ status: true, message: "Success", data: result })
                 }
                 let flag = false
-                let total = await productModel.findById(productId).select({ _id: 0, price: 1,productImage:1,title:1 })
+                let total = await productModel.findById(productId).select({ _id: 0, price: 1, productImage: 1, title: 1 })
                 let data = await cartModel.findOne({ userId: user_id }).select({ _id: 0, items: 1, totalPrice: 1 })
                 let a = data.items
                 let price = data.totalPrice
@@ -96,8 +96,8 @@ const createCart = async function (req, res) {
                     let d = {}
                     d.productId = productId
                     d.quantity = 1
-                    d.productImage=total.productImage
-                    d.title=total.title
+                    d.productImage = total.productImage
+                    d.title = total.title
                     a.push(d)
                     price += total.price
                 }
@@ -108,17 +108,17 @@ const createCart = async function (req, res) {
             }
         } else {
 
-            let c=await cartModel.findById(cartId).select({_id:0,userId:1})
-            if(c.userId!=user_id)
+            let c = await cartModel.findById(cartId).select({ _id: 0, userId: 1 })
+            if (c.userId != user_id)
                 return res.
                     status(400).
-                        send({status:false,message:"You can not Add the product in this cart"})
+                    send({ status: false, message: "You can not Add the product in this cart" })
             if (productId == undefined || !productId)
                 return res.
                     status(400).
                     send({ status: false, message: "productID is missing for adding into the cart" })
             let flag = false
-            let total = await productModel.findById(productId).select({ _id: 0, price: 1,productImage:1,title:1})
+            let total = await productModel.findById(productId).select({ _id: 0, price: 1, productImage: 1, title: 1 })
             let data = await cartModel.findOne({ _id: cartId }).select({ _id: 0, items: 1, totalPrice: 1 })
             let a = data.items
             let price = data.totalPrice
@@ -133,8 +133,8 @@ const createCart = async function (req, res) {
                 let d = {}
                 d.productId = productId
                 d.quantity = 1
-                d.productImage=total.productImage
-                d.title=total.title
+                d.productImage = total.productImage
+                d.title = total.title
                 a.push(d)
                 price += total.price
             }
@@ -173,28 +173,35 @@ const updateCart = async function (req, res) {
                 return res.
                     status(400).
                     send({ status: false, message: "productid is not valid" })
-            let result = await productModel.findOne({_id:productId,isDeleted:false})
+            let result = await productModel.findOne({ _id: productId, isDeleted: false })
             if (result == null)
                 return res.
                     status(400).
                     send({ status: false, message: "product is not exist" })
-            
+
         }
         if (cartId) {
             if (!mongoose.isValidObjectId(cartId))
                 return res.
                     status(400).
                     send({ status: false, message: "cart_id is not valid" })
-            let data = await cartModel.findById(cartId).select({_id:1,items:1,totalPrice:1,totalItems:1,userId:1})
+            let data = await cartModel.findById(cartId).select({ _id: 1, items: 1, totalPrice: 1, totalItems: 1, userId: 1 })
             let total = await productModel.findById(productId).select({ _id: 0, price: 1 })
+            
             if (data == null)
                 return res.
                     status(400).
                     send({ status: false, message: "cart is not exist" })
+            
             if (productId == "undefined" || !productId)
                 return res.
                     status(400).
                     send({ status: false, message: "provide the productId , on which product u want to update" })
+            
+            if(user_id!=data.userId)
+                return res.
+                    status(403).
+                        send({status:false,message:"You are not Authorised for updating this cart"})
             let a = data.items
             let price = data.totalPrice
             let flag = false, inside = true
@@ -202,12 +209,12 @@ const updateCart = async function (req, res) {
                 inside = false
                 if (a[i].productId == productId) {
                     if (removeProduct == 1) {
-                            a[i].quantity--
-                            price -= total.price
-                            flag = true
-                            if(a[i].quantity==0)
-                                a.splice(i,1)
-                        
+                        a[i].quantity--
+                        price -= total.price
+                        flag = true
+                        if (a[i].quantity == 0)
+                            a.splice(i, 1)
+
                     } else {
                         let count = a[i].quantity
                         a.splice(i, 1)
@@ -220,7 +227,7 @@ const updateCart = async function (req, res) {
                 return res.
                     status(400).
                     send({ status: false, message: "This product is not in your Cart", data: data })
-            if(inside == true)
+            if (inside == true)
                 return res.
                     status(400).
                     send({ status: false, message: "Cart is not containging any product", data: data })
@@ -228,10 +235,10 @@ const updateCart = async function (req, res) {
             return res.
                 status(200).
                 send({ status: true, message: "Success", data: result1 })
-        }else
+        } else
             return res.
                 status(400).
-                    send({status:false,message:"Cart_id is required"})
+                send({ status: false, message: "Cart_id is required" })
     } catch (error) {
         res.
             status(500).

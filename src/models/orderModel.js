@@ -16,6 +16,12 @@ const orderModel=new mongoose.Schema({
         quantity:{
             type:Number,
             require:true
+        },
+        productImge:{
+            type:String
+        },
+        title:{
+            type:String
         }
     }],
     totalPrice:{

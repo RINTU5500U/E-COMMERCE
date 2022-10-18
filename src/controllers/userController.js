@@ -297,7 +297,7 @@ const userDetails = async function (req, res) {
                 send({ status: false, message: "User not exist" })
         res.
             status(200).
-                send({ status: true, message: "Successfully Fetched UserDetails", data: result })
+            send({ status: true, message: "Successfully Fetched UserDetails", data: result })
     } catch (error) {
         res.
             status(500).
