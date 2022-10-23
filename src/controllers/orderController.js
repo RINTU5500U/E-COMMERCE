@@ -54,6 +54,7 @@ const createOrder = async function (req, res) {
 
 
             }
+            
             let data = await orderModel.create(obj)
             await cartModel.findByIdAndUpdate({cart_id},{$set:{items:[],totalItems:0,totalPrice:0}})
             return res.
