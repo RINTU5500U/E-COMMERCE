@@ -39,6 +39,10 @@ const createOrder = async function (req, res) {
                 return res.
                     status(404).
                     send({ status: false, message: "cart is not exist" })
+            if(result.items.length==0)
+                return res.
+                    status(400).
+                        send({status:false,message:"Here is no item in the cart , plz add item in the cart bofore going to order"})
             let a = result.items
             let count = 0
             for (let i = 0; i < a.length; i++) {
@@ -54,12 +58,13 @@ const createOrder = async function (req, res) {
 
 
             }
-            
+
             let data = await orderModel.create(obj)
-            await cartModel.findByIdAndUpdate({cart_id},{$set:{items:[],totalItems:0,totalPrice:0}})
-            return res.
+
+            res.
                 status(201).
                 send({ status: true, message: "Success", data: data })
+            await cartModel.findOne({_id:cart_id}).updateOne({ $set: { items: [], totalPrice: 0, totalItems: 0 } })
         } else {
             return res.
                 status(400).
@@ -110,6 +115,10 @@ const updateOrder = async function (req, res) {
             return res.
                 status(400).
                 send({ status: false, message: "U can not updated this , bcz its also present in complete stage" })
+        if(data.status=="cancled")
+            return res.
+                status(400).
+                    send({status:false,message:"U can no update the status now bcz items is also in cancel stage"})
         if (user_id != data.userId)
             return res.
                 status(400).
